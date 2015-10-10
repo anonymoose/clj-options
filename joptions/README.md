@@ -23,6 +23,26 @@ mvn package
 mvn install
 ```
 
+If you are working on the with clj-options, joptions is now installed and lein should be able to recognize it.
+
+
+## Usage
+
+```
+        AmericanEquityOption option = new AmericanEquityOption();
+        option.setTodaysDate(new Date(15, Month.May, 1998));
+        option.setSettlementDate(new Date(17, Month.May, 1998));
+        option.setMaturityDate(new Date(17, Month.May, 1999));
+        option.setOptionType("Put");
+        option.setStrike(40.0);
+        option.setUnderlying(36.0);
+
+        option.calculateExercise();
+
+        System.out.println("NPV = " + option.getPresentValue());
+        System.out.println("IV  = " + option.getImpliedVolatility());
+
+```
 
 ## License
 

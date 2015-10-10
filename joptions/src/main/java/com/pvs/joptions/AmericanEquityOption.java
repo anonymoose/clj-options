@@ -88,10 +88,26 @@ public class AmericanEquityOption {
     }
 
     public static void main(final String[] args) {
-        run1();
+        runRawJquantlib();
+        runTest();
     }
 
-    public static void run1() {
+    public static void runTest() {
+        AmericanEquityOption option = new AmericanEquityOption();
+        option.setTodaysDate(new Date(15, Month.May, 1998));
+        option.setSettlementDate(new Date(17, Month.May, 1998));
+        option.setMaturityDate(new Date(17, Month.May, 1999));
+        option.setOptionType("Put");
+        option.setStrike(40.0);
+        option.setUnderlying(36.0);
+
+        option.calculateExercise();
+
+        System.out.println("NPV = " + option.getPresentValue());
+        System.out.println("IV  = " + option.getImpliedVolatility());
+    }
+
+    public static void runRawJquantlib() {
         final Calendar calendar = new Target();
         final Date todaysDate = new Date(15, Month.May, 1998);
         final Date settlementDate = new Date(17, Month.May, 1998);
@@ -101,7 +117,7 @@ public class AmericanEquityOption {
         final Option.Type type = Option.Type.Put;
         final double strike = 40.0;
         final double underlying = 36.0;
-        /*@Rate*/final double riskFreeRate = 0.06;
+        /*@Rate*/final double riskFreeRate = 0.00273;
         final double volatility = 0.2;
         final double dividendYield = 0.00;
 
@@ -124,17 +140,13 @@ public class AmericanEquityOption {
         // American Options
         final VanillaOption americanOption = new VanillaOption(payoff, americanExercise);
 
-
-        // Analytic formulas:
-
-
         // Bjerksund and Stensland approximation for American
-        String method = "Bjerksund/Stensland";
         americanOption.setPricingEngine(new BjerksundStenslandApproximationEngine(bsmProcess));
         double price = americanOption.NPV();
-        System.out.println("Price = " + price);
         double iv = americanOption.impliedVolatility(price, bsmProcess);
-        System.out.println("IV = " + iv);
+
+        System.out.println("NPV = " + price);
+        System.out.println("IV  = " + iv);
     }
 
     public Date getTodaysDate() {
@@ -189,8 +201,12 @@ public class AmericanEquityOption {
         return optionType;
     }
 
-    public void setOptionType(Option.Type optionType) {
-        this.optionType = optionType;
+    public void setOptionType(String strOptionType) {
+        if ("put".equalsIgnoreCase(strOptionType))
+            this.optionType = Option.Type.Put;
+        else if ("call".equalsIgnoreCase(strOptionType))
+            this.optionType = Option.Type.Call;
+        else QL.error("Invalid option type " + strOptionType);
     }
 
     public Date getMaturityDate() {
