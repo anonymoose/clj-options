@@ -1,6 +1,10 @@
 # JOptions
 
-Java library that makes it easy to consume JQuantLib in clojure.  Because sometimes you just want IV for an American option and you don't want to get your PhD first.
+Java library that makes it easy to consume JQuantLib in clojure.
+
+Because sometimes you just want IV for an American option and you don't want to get your PhD first.
+
+This does what I need it to do, but might provide a nice shell for doing other interesting work with JQuantLib.
 
 ## Setup 
 
