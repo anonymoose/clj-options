@@ -13,19 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entry point into simplified options work with American style options.
+ * Entry point into simplified options work with European style options.
  *
  * @author anonymoose
  */
-public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionCalculator> {
+public class EuropeanEquityOption extends BaseEquityOption<EuropeanEquityOptionCalculator> {
 
-    private AmericanEquityOptionCalculator option;
 
-    public AmericanEquityOption() {
+    private EuropeanEquityOptionCalculator option;
+
+    public EuropeanEquityOption() {
         super();
     }
 
-    public AmericanEquityOptionCalculator getOption() {
+    public EuropeanEquityOptionCalculator getOption() {
         QL.require(option != null, "option not calculated.  must call calculateExercise");
         return option;
     }
@@ -39,13 +40,12 @@ public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionC
 
         new Settings().setEvaluationDate(todaysDate);
 
-        option = new AmericanEquityOptionCalculator(
+        option = new EuropeanEquityOptionCalculator(
                 optionType, underlying, strike, riskFreeRate, dividendYield, volatility,
                 settlementDate, maturityDate,
                 divDates, divAmounts,
                 calendar, dayCounter);
     }
-
 
     public static void main(final String[] args) {
         runRawJquantlib2();
@@ -53,7 +53,7 @@ public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionC
     }
 
     public static void runTest() {
-        AmericanEquityOption option = new AmericanEquityOption();
+        EuropeanEquityOption option = new EuropeanEquityOption();
         option.setTodaysDate(new Date(15, Month.May, 1998));
         option.setSettlementDate(new Date(17, Month.May, 1998));
         option.setMaturityDate(new Date(17, Month.May, 1999));
@@ -88,7 +88,7 @@ public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionC
 
         new Settings().setEvaluationDate(today);
 
-        final AmericanEquityOptionCalculator option = new AmericanEquityOptionCalculator(
+        final EuropeanEquityOptionCalculator option = new EuropeanEquityOptionCalculator(
                 type, underlying, strike, riskFreeRate, dividendYield, volatility,
                 settlementDate, maturityDate,
                 divDates, divAmounts,
@@ -100,10 +100,6 @@ public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionC
         final double theta = option.theta();
         final double vega  = option.vega();
         final double rho   = option.rho();
-        final double itm   = option.itmCashProbability();
-
-        // market price: simply guess something 10% higher than theoretical
-        //FIXME
         final double ivol = option.impliedVolatility(value);
 
 
@@ -113,7 +109,8 @@ public class AmericanEquityOption extends BaseEquityOption<AmericanEquityOptionC
         QL.info(String.format("theta       = %13.9f", theta));
         QL.info(String.format("vega        = %13.9f", vega));
         QL.info(String.format("rho         = %13.9f", rho));
-        QL.info(String.format("itm         = %13.9f", itm));
+        //
         QL.info(String.format("implied vol = %13.9f", ivol));
+
     }
 }

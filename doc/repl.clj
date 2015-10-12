@@ -21,7 +21,6 @@
 
 ;(use '[midje.sweet])
 ;(use '[midje.repl])
-;(use '[midje.test-util])
 
 (defonce ignored-namespaces (atom #{}))
 
