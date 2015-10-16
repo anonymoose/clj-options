@@ -2,11 +2,11 @@
 
 A Clojure library for working with stock option derivatives, a.k.a. options.
 
-Why?  Because jquantlib is a fantastic, generic library for handling options in java.  All kinds of options, both exotic and vanilla.
+Why?  Because OpenGamma is a fantastic, generic library for handling options in java.  All kinds of options, both exotic and vanilla.
 I just wanted a library I could use that allowed me to do some simple quant work on vanilla options, in Clojure, without requiring a
-PhD in physics.
+PhD in astrophysics.
 
-This library wraps JQuantLib, and exposes only the stuff you need.  Put in some data available from your broker, get out 
+This library wraps OpenGamma, and exposes only the stuff you need.  Put in some data available from your broker, get out 
 implied volatility and the greeks.
 
 # WARNING
@@ -21,7 +21,7 @@ If the math is wrong, or interpreted incorrectly, and you blow up your account, 
 clj-options relies on the following libraries:
 
 - Joda Time for time/date handling.
-- JQuantLib for handling all the math heavy lifting.
+- OpenGamma for handling all the math heavy lifting.
 - joptions for simplifying access to JQuantLib.  joptions is provided here as a subproject.
 
 ## Usage
@@ -33,27 +33,26 @@ user>  (require '[clj-time.coerce :as dtc])
 user>  (use '[clojure.pprint])
 
 user>  (let [contract (equity/->OptionContract
-                 (dtt/today)                                ; today's date
-                 (dtt/plus (dtt/today) (dtt/days 30))       ; settlement date
-                 (dtt/plus (dtt/today) (dtt/days 31))       ; maturity date
-                 equity/OPTION-TYPE-PUT                     ; Put option
-                 8.0                                        ; Strike price
-                 25.0                                       ; Underlying Price
-                 )]
-           (pprint (equity/calculate-american-exercise contract)))
+                   (dtt/today)                         ; today's date
+                   (dtt/plus (dtt/today) (dtt/days 30)) ; expiration date
+                   equity/OPTION-TYPE-CALL
+                   115.0
+                   100.48
+                   1.58
+                   nil
+                   )]
+           (equity/calculate-american-exercise contract)
+         )
 
-{:delta -1.1102230246251565E-16,
- :delta-forward -1.1102147207963278E-16,
- :elasticity 0.0,
- :gamma 0.0,
- :rho -2.4333473332522257E-18,
- :theta 2.4247089502618544E-18,
- :theta-per-day 6.643038219895491E-21,
- :vega 0.0,
- :itm-cash-probability 0.9999999999999999,
- :strike-sensitivity 1.1102147207963278E-16,
- :implied-volatility 1.0E-7}
-
+{:contract-price 1.58,
+ :implied-volatility 0.5187008616664563,
+ :delta 0.2023395224636707,
+ :gamma 0.018867609640569494,
+ :vega 8.121224102539303,
+ :theta -25.621630280871198,
+ :vomma 12.811928087667539,
+ :vanna 0.5337311051138213,
+ :volga 12.811928087667539}
 
 ```
 
