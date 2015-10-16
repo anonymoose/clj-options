@@ -1,4 +1,4 @@
-(defproject clj-options "0.1.0-SNAPSHOT"
+(defproject clj-options "0.1.0"
   :description "Vanilla options handling in Clojure"
   :url "https://github.com/anonymoose/clj-options"
   :license {:name "Eclipse Public License"
