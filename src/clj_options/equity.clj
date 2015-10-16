@@ -11,101 +11,92 @@
 
 (defrecord OptionContract
     [today-dt
-     settlement-dt
-     maturity-dt
+     expiration-dt
      option-type
      strike
-     underlying])
-
-
-(defrecord OptionStatistics
-    [delta
-     delta-forward
-     elasticity
-     gamma
-     rho
-     theta
-     theta-per-day
-     vega
-     itm-cash-probability
-     strike-sensitivity
+     underlying
+     contract-price
      implied-volatility
      ])
+
+
+(defrecord OptionContractStatistics
+    [contract-price
+     implied-volatility
+     delta
+     gamma
+     vega
+     theta
+     vomma
+     vanna
+     volga
+     ])
+
+(defmacro unless [pred a b]
+  `(if (not ~pred) ~a ~b))
+
+;; usage:
+
+(unless false (println "Will print") (println "Will not print"))
+
+
+(defn- calculate-generic-exercise
+  "Pass in the instance from joptions you want to handle the math.  AmericanEquityOption or EuropeanEquityOption"
+  [contract handler]
+  (let [contract (doto handler
+                   (.setTodaysDate (dtc/to-date (:today-dt contract)))
+                   (.setExpirationDate (dtc/to-date (:expiration-dt contract)))
+                   (.setOptionType (:option-type contract))
+                   (.setStrike (:strike contract))
+                   (.setUnderlying (:underlying contract))
+                   (.setContractPrice (:contract-price contract))            ; one of these will be null
+                   (.setImpliedVolatility (:implied-volatility contract))    ; one of these will be null
+                   (.calculate)
+                   )]
+    (->OptionContractStatistics
+     (.getContractPrice contract)
+     (.getImpliedVolatility contract)
+     (.getDelta contract)
+     (.getGamma contract)
+     (.getVega contract)
+     (.getTheta contract)
+     (.getVomma contract)
+     (.getVanna contract)
+     (.getVolga contract)
+     )
+    )
+  )
+
 
 (defn calculate-american-exercise
   "Calculate exercise statistics for an American style options contract."
   [contract]
-  (let [contract (doto (AmericanEquityOption.)
-                   (.setTodaysDate (dtc/to-date (:today-dt contract)))
-                   (.setSettlementDate (dtc/to-date (:settlement-dt contract)))
-                   (.setMaturityDate (dtc/to-date (:maturity-dt contract)))
-                   (.setOptionType (:option-type contract))
-                   (.setStrike (:strike contract))
-                   (.setUnderlying (:underlying contract))
-                   (.calculateExercise)
-                   )]
-    (->OptionStatistics
-     (.getDelta contract)
-     (.getDeltaForward contract)
-     (.getElasticity contract)
-     (.getGamma contract)
-     (.getRho contract)
-     (.getTheta contract)
-     (.getThetaPerDay contract)
-     (.getVega contract)
-     (.getItmCashProbability contract)
-     (.getStrikeSensitivity contract)
-     (.getImpliedVolatility contract)
-     )
-    )
+  (calculate-generic-exercise contract (AmericanEquityOption.))
   )
 
 
 (defn calculate-european-exercise
   "Calculate exercise statistics for an European style options contract."
   [contract]
-  (let [contract (doto (AmericanEquityOption.)
-                   (.setTodaysDate (dtc/to-date (:today-dt contract)))
-                   (.setSettlementDate (dtc/to-date (:settlement-dt contract)))
-                   (.setMaturityDate (dtc/to-date (:maturity-dt contract)))
-                   (.setOptionType (:option-type contract))
-                   (.setStrike (:strike contract))
-                   (.setUnderlying (:underlying contract))
-                   (.calculateExercise)
-                   )]
-    (->OptionStatistics
-     (.getDelta contract)
-     (.getDeltaForward contract)
-     (.getElasticity contract)
-     (.getGamma contract)
-     (.getRho contract)
-     (.getTheta contract)
-     (.getThetaPerDay contract)
-     (.getVega contract)
-     (.getItmCashProbability contract)
-     (.getStrikeSensitivity contract)
-     (.getImpliedVolatility contract)
-     )
-    )
+  (calculate-generic-exercise contract (EuropeanEquityOption.))
   )
-
-
 
 
 (comment
   ; sample usage
   (require '[clj-time.core :as dtt])
   (require '[clj-time.coerce :as dtc])
-  (require '[clj-options.american :as american])
+  (require '[clj-options.equity :as equity])
 
-  (let [contract (american/->OptionContract
-                  (dtt/today)    ; today's date
-                  (dtt/plus (dtt/today) (dtt/days 30)) ; settlement date
-                  (dtt/plus (dtt/today) (dtt/days 31)) ; maturity date
-                  american/OPTION-TYPE-PUT
-                  21.0
-                  25.0
-                  )]
-    (american/calculate-exercise contract)
-    )
+  (pprint (let [contract (equity/->OptionContract
+                   (dtt/today)                         ; today's date
+                   (dtt/plus (dtt/today) (dtt/days 30)) ; expiration date
+                   equity/OPTION-TYPE-CALL
+                   115.0
+                   100.48
+                   1.58
+                   nil
+                   )]
+     (equity/calculate-american-exercise contract)
+     ))
   )

@@ -14,9 +14,8 @@
 
 
 
+(use 'clojure.pprint)
 (require '[clojure.string :as str] :reload)
-(use '[clojure.pprint])
-
 (require '[clojure.reflect :as reflect])
 
 ;(use '[midje.sweet])
