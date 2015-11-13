@@ -49,15 +49,16 @@ public class AmericanEquityOption extends BaseEquityOption {
         calculateGreeks();
     }
 
+    // #stok.data.options.ContractQuote{:exc "NASDAQ", :sym "AAPL", :expiration-dt "20151030", :option-type "Call", :strike 101.0, :quote [20151015 11.9 11.9 11.9 11.9 1.0 138.0]}
     public static void main(String[] args) {
         AmericanEquityOption o = new AmericanEquityOption();
         o.setTodaysDate(new Date());
-        GregorianCalendar gc = new GregorianCalendar(2015, Calendar.NOVEMBER, 20);
+        GregorianCalendar gc = new GregorianCalendar(2015, Calendar.OCTOBER, 30);
         o.setExpirationDate(gc.getTime());
-        o.setUnderlying(99.67);
-        o.setStrike(115.);
-        //o.setContractPrice(1.58);
-        o.setImpliedVolatility(.4872);
+        o.setUnderlying(118.);
+        o.setStrike(119.);
+        o.setContractPrice(0.76);
+        //o.setImpliedVolatility(.4872);
         o.setOptionType("call");
         o.setRiskFreeRate(0.02);
         o.calculate();

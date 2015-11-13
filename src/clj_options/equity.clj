@@ -37,9 +37,6 @@
 
 ;; usage:
 
-(unless false (println "Will print") (println "Will not print"))
-
-
 (defn- calculate-generic-exercise
   "Pass in the instance from joptions you want to handle the math.  AmericanEquityOption or EuropeanEquityOption"
   [contract handler]
