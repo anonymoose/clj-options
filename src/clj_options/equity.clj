@@ -30,6 +30,7 @@
      vomma
      vanna
      volga
+     itm-probability
      ])
 
 (defmacro unless [pred a b]
@@ -60,6 +61,7 @@
      (.getVomma contract)
      (.getVanna contract)
      (.getVolga contract)
+     (.getItmProbability contract)
      )
     )
   )

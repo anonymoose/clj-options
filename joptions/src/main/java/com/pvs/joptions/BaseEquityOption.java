@@ -9,6 +9,8 @@ import org.threeten.bp.ZonedDateTime;
 
 import java.util.Date;
 
+import static com.opengamma.analytics.financial.model.volatility.BlackFormulaRepository.*;
+
 /**
  * Base class that handles most get/set bits.
  *
@@ -35,6 +37,7 @@ public abstract class BaseEquityOption {
     Double vomma = Double.NaN;
     Double vanna = Double.NaN;
     Double volga = Double.NaN;
+    Double dualDelta = Double.NaN;
 
     public BaseEquityOption() {
     }
@@ -43,13 +46,14 @@ public abstract class BaseEquityOption {
 
     protected void calculateGreeks() {
         Double timeToExpiry = getTimeToExpiry();
-        delta = BlackFormulaRepository.delta(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility, isCall());
-        gamma = BlackFormulaRepository.gamma(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
-        theta = BlackFormulaRepository.theta(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility, isCall(), getRiskFreeRate());
-        vega = BlackFormulaRepository.vega(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
-        vomma = BlackFormulaRepository.vomma(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
-        vanna = BlackFormulaRepository.vanna(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
-        volga = BlackFormulaRepository.volga(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        delta = delta(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility, isCall());
+        gamma = gamma(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        theta = theta(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility, isCall(), getRiskFreeRate());
+        vega = vega(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        vomma = vomma(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        vanna = vanna(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        volga = volga(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility);
+        dualDelta = dualDelta(getUnderlying(), getStrike(), timeToExpiry, impliedVolatility, isCall());
     }
 
     public Double getImpliedVolatility() {
@@ -81,7 +85,7 @@ public abstract class BaseEquityOption {
     }
 
     public Double getItmProbability() {
-        return delta;
+        return dualDelta;
     }
 
     public Double getVega() {
